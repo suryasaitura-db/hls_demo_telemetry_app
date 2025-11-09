@@ -1,0 +1,602 @@
+# ====================================================================
+# DATABRICKS AI/BI DASHBOARD CONFIGURATION
+# ====================================================================
+# Dashboard Name: Apps Telemetry Executive Dashboard
+# Purpose: Comprehensive monitoring of Databricks Apps usage and adoption
+# Created: 2025-11-08
+# ====================================================================
+
+dashboard:
+  name: "Apps Telemetry Executive Dashboard"
+  description: "Comprehensive analytics for Databricks Apps usage, adoption, and performance monitoring"
+  refresh_schedule: "0 */6 * * *"  # Refresh every 6 hours
+  tags:
+    - telemetry
+    - apps
+    - executive
+    - monitoring
+
+# ====================================================================
+# FILTERS (Global Dashboard Filters)
+# ====================================================================
+filters:
+  - name: date_range
+    type: date_range
+    label: "Date Range"
+    default: "Last 30 Days"
+    options:
+      - "Last 7 Days"
+      - "Last 30 Days"
+      - "Last 90 Days"
+      - "Last 12 Months"
+      - "Custom Range"
+  
+  - name: app_name_filter
+    type: multi_select
+    label: "App Name"
+    source: "SELECT DISTINCT request_params.app_name FROM system.access.audit WHERE service_name = 'apps'"
+    default: "All Apps"
+  
+  - name: user_segment_filter
+    type: single_select
+    label: "User Segment"
+    options:
+      - "All Segments"
+      - "Power User"
+      - "Active User"
+      - "Regular User"
+      - "Casual User"
+    default: "All Segments"
+
+# ====================================================================
+# LAYOUT SECTIONS
+# ====================================================================
+
+layout:
+  # ------------------------------------------------------------------------
+  # Section 1: KPI Summary Cards (Top Row)
+  # ------------------------------------------------------------------------
+  - section:
+      name: "kpi_summary"
+      title: "Key Performance Indicators"
+      layout: "grid"
+      columns: 4
+      
+      widgets:
+        - widget:
+            id: "kpi_total_users"
+            type: "counter"
+            title: "Total Unique Users"
+            query_ref: "widget_kpi_summary"
+            value_column: "total_unique_users"
+            format: "number"
+            icon: "users"
+            color: "#4A90E2"
+            comparison:
+              enabled: true
+              period: "previous_period"
+            
+        - widget:
+            id: "kpi_total_apps"
+            type: "counter"
+            title: "Active Apps"
+            query_ref: "widget_kpi_summary"
+            value_column: "total_unique_apps"
+            format: "number"
+            icon: "app"
+            color: "#7B68EE"
+            
+        - widget:
+            id: "kpi_total_interactions"
+            type: "counter"
+            title: "Total Interactions"
+            query_ref: "widget_kpi_summary"
+            value_column: "total_interactions"
+            format: "number"
+            icon: "activity"
+            color: "#50C878"
+            comparison:
+              enabled: true
+              period: "previous_period"
+            
+        - widget:
+            id: "kpi_adoption_rate"
+            type: "counter"
+            title: "Adoption Rate"
+            query_ref: "widget_kpi_summary"
+            value_column: "apps_adoption_rate"
+            format: "percentage"
+            icon: "trending-up"
+            color: "#FF6B6B"
+            threshold:
+              warning: 50
+              good: 75
+
+  # ------------------------------------------------------------------------
+  # Section 2: Usage Trends (Second Row)
+  # ------------------------------------------------------------------------
+  - section:
+      name: "usage_trends"
+      title: "Usage Trends & Patterns"
+      layout: "grid"
+      columns: 2
+      
+      widgets:
+        - widget:
+            id: "chart_dau_trend"
+            type: "line_chart"
+            title: "Daily Active Users Trend"
+            subtitle: "Last 90 days"
+            query_ref: "widget_dau_trend"
+            
+            axes:
+              x:
+                column: "activity_date"
+                label: "Date"
+                type: "datetime"
+              
+              y_primary:
+                columns:
+                  - name: "daily_active_users"
+                    label: "Daily Active Users"
+                    color: "#4A90E2"
+                    line_width: 2
+              
+              y_secondary:
+                columns:
+                  - name: "total_clicks"
+                    label: "Total Clicks"
+                    color: "#FF6B6B"
+                    line_style: "dashed"
+            
+            options:
+              show_points: true
+              smooth_lines: true
+              show_legend: true
+              enable_zoom: true
+              show_tooltip: true
+        
+        - widget:
+            id: "chart_top_apps"
+            type: "horizontal_bar_chart"
+            title: "Top 10 Apps by Engagement"
+            subtitle: "Last 30 days"
+            query_ref: "widget_top_apps"
+            
+            axes:
+              x:
+                column: "click_count"
+                label: "Total Clicks"
+              
+              y:
+                column: "app_name"
+                label: "App Name"
+            
+            color:
+              by: "unique_users"
+              scale: "sequential"
+              palette: "blues"
+            
+            options:
+              show_values: true
+              sort_by: "click_count"
+              sort_order: "desc"
+              show_legend: false
+
+  # ------------------------------------------------------------------------
+  # Section 3: Heatmap & Patterns (Third Row)
+  # ------------------------------------------------------------------------
+  - section:
+      name: "usage_patterns"
+      title: "Usage Patterns Analysis"
+      layout: "full_width"
+      
+      widgets:
+        - widget:
+            id: "heatmap_usage_patterns"
+            type: "heatmap"
+            title: "Usage Patterns by Day and Hour"
+            subtitle: "Darker colors indicate higher activity"
+            query_ref: "widget_usage_heatmap"
+            
+            axes:
+              x:
+                column: "hour_of_day"
+                label: "Hour of Day"
+                format: "hour"
+              
+              y:
+                column: "day_name"
+                label: "Day of Week"
+                order:
+                  - "Monday"
+                  - "Tuesday"
+                  - "Wednesday"
+                  - "Thursday"
+                  - "Friday"
+                  - "Saturday"
+                  - "Sunday"
+              
+              value:
+                column: "click_count"
+                label: "Click Count"
+            
+            color:
+              palette: "RdYlGn"
+              scale: "logarithmic"
+            
+            options:
+              show_values: false
+              cell_size: "auto"
+              show_tooltip: true
+
+  # ------------------------------------------------------------------------
+  # Section 4: User Analysis (Fourth Row)
+  # ------------------------------------------------------------------------
+  - section:
+      name: "user_analysis"
+      title: "User Behavior & Cohorts"
+      layout: "grid"
+      columns: 2
+      
+      widgets:
+        - widget:
+            id: "chart_user_cohorts"
+            type: "stacked_area_chart"
+            title: "New vs Returning Users"
+            subtitle: "Daily breakdown"
+            query_ref: "widget_user_cohorts"
+            
+            axes:
+              x:
+                column: "activity_date"
+                label: "Date"
+                type: "datetime"
+              
+              y:
+                columns:
+                  - name: "new_users"
+                    label: "New Users"
+                    color: "#4A90E2"
+                  - name: "returning_users"
+                    label: "Returning Users"
+                    color: "#50C878"
+                label: "User Count"
+            
+            options:
+              stack_mode: "normal"
+              show_legend: true
+              enable_zoom: true
+        
+        - widget:
+            id: "chart_error_monitoring"
+            type: "combo_chart"
+            title: "App Health Monitor"
+            subtitle: "Success vs Error Rates"
+            query_ref: "widget_error_monitoring"
+            
+            axes:
+              x:
+                column: "activity_date"
+                label: "Date"
+                type: "datetime"
+              
+              y_primary:
+                columns:
+                  - name: "successful_requests"
+                    label: "Successful Requests"
+                    type: "bar"
+                    color: "#50C878"
+                  - name: "failed_requests"
+                    label: "Failed Requests"
+                    type: "bar"
+                    color: "#FF6B6B"
+                label: "Request Count"
+              
+              y_secondary:
+                columns:
+                  - name: "error_rate_percentage"
+                    label: "Error Rate %"
+                    type: "line"
+                    color: "#FF4500"
+                    line_width: 3
+                label: "Error Rate (%)"
+            
+            options:
+              show_legend: true
+              enable_zoom: true
+              show_threshold_line:
+                value: 5
+                label: "5% Error Threshold"
+                color: "#FFA500"
+
+  # ------------------------------------------------------------------------
+  # Section 5: User Segmentation Table (Fifth Row)
+  # ------------------------------------------------------------------------
+  - section:
+      name: "user_segmentation"
+      title: "User Engagement Details"
+      layout: "full_width"
+      
+      widgets:
+        - widget:
+            id: "table_user_segments"
+            type: "table"
+            title: "User Engagement Segmentation"
+            subtitle: "Top 100 users by activity"
+            query_ref: "widget_user_segmentation"
+            
+            columns:
+              - name: "user_email"
+                label: "User Email"
+                width: "250px"
+                sortable: true
+              
+              - name: "user_segment"
+                label: "Segment"
+                width: "120px"
+                sortable: true
+                conditional_formatting:
+                  - condition: "= 'Power User'"
+                    background_color: "#4A90E2"
+                    text_color: "#FFFFFF"
+                  - condition: "= 'Active User'"
+                    background_color: "#50C878"
+                    text_color: "#FFFFFF"
+                  - condition: "= 'Regular User'"
+                    background_color: "#FFA500"
+                    text_color: "#FFFFFF"
+                  - condition: "= 'Casual User'"
+                    background_color: "#D3D3D3"
+                    text_color: "#333333"
+              
+              - name: "activity_status"
+                label: "Status"
+                width: "100px"
+                sortable: true
+                conditional_formatting:
+                  - condition: "= 'Active'"
+                    background_color: "#50C878"
+                    text_color: "#FFFFFF"
+                  - condition: "= 'At Risk'"
+                    background_color: "#FFA500"
+                    text_color: "#FFFFFF"
+                  - condition: "= 'Inactive'"
+                    background_color: "#FF6B6B"
+                    text_color: "#FFFFFF"
+              
+              - name: "total_clicks"
+                label: "Total Clicks"
+                width: "120px"
+                sortable: true
+                format: "number"
+                alignment: "right"
+              
+              - name: "apps_accessed"
+                label: "Apps Accessed"
+                width: "120px"
+                sortable: true
+                format: "number"
+                alignment: "right"
+              
+              - name: "days_active"
+                label: "Days Active"
+                width: "120px"
+                sortable: true
+                format: "number"
+                alignment: "right"
+              
+              - name: "avg_clicks_per_day"
+                label: "Avg Clicks/Day"
+                width: "140px"
+                sortable: true
+                format: "decimal:2"
+                alignment: "right"
+              
+              - name: "last_interaction"
+                label: "Last Seen"
+                width: "180px"
+                sortable: true
+                format: "datetime"
+            
+            options:
+              default_sort:
+                column: "total_clicks"
+                order: "desc"
+              page_size: 25
+              show_search: true
+              show_export: true
+              show_pagination: true
+              row_limit: 100
+
+  # ------------------------------------------------------------------------
+  # Section 6: Advanced Analytics (Sixth Row)
+  # ------------------------------------------------------------------------
+  - section:
+      name: "advanced_analytics"
+      title: "Advanced Analytics & Insights"
+      layout: "grid"
+      columns: 2
+      
+      widgets:
+        - widget:
+            id: "chart_retention_cohorts"
+            type: "cohort_heatmap"
+            title: "Weekly User Retention"
+            subtitle: "Cohort analysis showing retention rates"
+            query_ref: "user_retention_cohorts"
+            
+            axes:
+              cohort: "cohort_week"
+              weeks:
+                - "week_0_users"
+                - "week_1_users"
+                - "week_2_users"
+                - "week_3_users"
+                - "week_4_users"
+              retention_percentages:
+                - "retention_week_1_pct"
+                - "retention_week_2_pct"
+                - "retention_week_3_pct"
+                - "retention_week_4_pct"
+            
+            color:
+              palette: "RdYlGn"
+              min_value: 0
+              max_value: 100
+            
+            options:
+              show_values: true
+              value_format: "percentage"
+        
+        - widget:
+            id: "chart_session_analysis"
+            type: "box_plot"
+            title: "App Session Duration Distribution"
+            subtitle: "Minutes per session by app"
+            query_ref: "app_session_analysis"
+            
+            axes:
+              x:
+                column: "app_name"
+                label: "App Name"
+              
+              y:
+                metrics:
+                  min: "min_session_duration_minutes"
+                  q1: "median_session_duration_minutes"
+                  median: "median_session_duration_minutes"
+                  q3: "p90_session_duration_minutes"
+                  max: "max_session_duration_minutes"
+                label: "Session Duration (minutes)"
+            
+            options:
+              show_outliers: true
+              top_n_apps: 10
+
+# ====================================================================
+# QUERY DEFINITIONS (References to SQL views)
+# ====================================================================
+
+queries:
+  widget_kpi_summary:
+    sql: "SELECT * FROM hls_amer_catalog.apps_telemetry.widget_kpi_summary"
+    cache_ttl: 3600  # 1 hour
+  
+  widget_dau_trend:
+    sql: "SELECT * FROM hls_amer_catalog.apps_telemetry.widget_dau_trend"
+    cache_ttl: 3600
+  
+  widget_top_apps:
+    sql: "SELECT * FROM hls_amer_catalog.apps_telemetry.widget_top_apps"
+    cache_ttl: 3600
+  
+  widget_user_segmentation:
+    sql: "SELECT * FROM hls_amer_catalog.apps_telemetry.widget_user_segmentation LIMIT 100"
+    cache_ttl: 3600
+  
+  widget_usage_heatmap:
+    sql: "SELECT * FROM hls_amer_catalog.apps_telemetry.widget_usage_heatmap"
+    cache_ttl: 7200  # 2 hours
+  
+  widget_error_monitoring:
+    sql: "SELECT * FROM hls_amer_catalog.apps_telemetry.widget_error_monitoring"
+    cache_ttl: 1800  # 30 minutes
+  
+  widget_user_cohorts:
+    sql: "SELECT * FROM hls_amer_catalog.apps_telemetry.widget_user_cohorts"
+    cache_ttl: 3600
+  
+  user_retention_cohorts:
+    sql: "SELECT * FROM hls_amer_catalog.apps_telemetry.user_retention_cohorts"
+    cache_ttl: 7200
+  
+  app_session_analysis:
+    sql: "SELECT * FROM hls_amer_catalog.apps_telemetry.app_session_analysis"
+    cache_ttl: 7200
+
+# ====================================================================
+# ALERTING CONFIGURATION
+# ====================================================================
+
+alerts:
+  - name: "high_error_rate_alert"
+    description: "Alert when error rate exceeds 5%"
+    query: "SELECT * FROM hls_amer_catalog.apps_telemetry.high_error_rate_apps WHERE error_rate_percentage > 5"
+    schedule: "*/30 * * * *"  # Every 30 minutes
+    notification:
+      channels:
+        - email
+        - slack
+      recipients:
+        - "data-platform-team@company.com"
+      message_template: "High error rate detected for app: {app_name} ({error_rate_percentage}%)"
+  
+  - name: "anomaly_detection_alert"
+    description: "Alert on usage anomalies"
+    query: "SELECT * FROM hls_amer_catalog.apps_telemetry.anomaly_detection WHERE anomaly_status = 'Anomaly Detected'"
+    schedule: "0 8 * * *"  # Daily at 8 AM
+    notification:
+      channels:
+        - email
+      recipients:
+        - "analytics-team@company.com"
+  
+  - name: "inactive_users_alert"
+    description: "Alert for previously active users becoming inactive"
+    query: "SELECT * FROM hls_amer_catalog.apps_telemetry.inactive_users_alert WHERE inactivity_level = 'Critical - 30+ days'"
+    schedule: "0 9 * * 1"  # Weekly on Monday at 9 AM
+    notification:
+      channels:
+        - email
+      recipients:
+        - "product-team@company.com"
+
+# ====================================================================
+# EXPORT CONFIGURATION
+# ====================================================================
+
+exports:
+  - name: "weekly_executive_report"
+    description: "Weekly executive summary export"
+    query: "SELECT * FROM hls_amer_catalog.apps_telemetry.weekly_executive_summary"
+    format: "xlsx"
+    schedule: "0 7 * * 1"  # Monday at 7 AM
+    destination:
+      type: "email"
+      recipients:
+        - "executives@company.com"
+  
+  - name: "monthly_trends_export"
+    description: "Monthly trends data export"
+    query: "SELECT * FROM hls_amer_catalog.apps_telemetry.monthly_trends_report"
+    format: "csv"
+    schedule: "0 8 1 * *"  # First day of month at 8 AM
+    destination:
+      type: "dbfs"
+      path: "/dbfs/analytics/exports/apps_telemetry/monthly/"
+
+# ====================================================================
+# PERMISSIONS
+# ====================================================================
+
+permissions:
+  viewers:
+    - "all-employees@company.com"
+  editors:
+    - "analytics-team@company.com"
+    - "data-platform-team@company.com"
+  admins:
+    - "data-engineering-leads@company.com"
+
+# ====================================================================
+# METADATA
+# ====================================================================
+
+metadata:
+  version: "1.0.0"
+  created_by: "Data Engineering Team"
+  last_updated: "2025-11-08"
+  data_source: "system.access.audit"
+  update_frequency: "Real-time with 6-hour refresh"
+  retention_policy: "90 days for detailed logs, 2 years for aggregated metrics"
