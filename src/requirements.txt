@@ -1,0 +1,27 @@
+# Python Dependencies for HLS Demo Telemetry App
+# This will be populated based on project requirements
+
+# Dash framework for web app
+dash>=2.14.0
+dash-bootstrap-components>=1.5.0
+
+# Databricks
+databricks-sdk>=0.12.0
+
+# Data processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# HTTP requests
+requests>=2.31.0
+
+# Environment variables
+python-dotenv>=1.0.0
+
+# Date/time handling
+python-dateutil>=2.8.2
+
+# Logging
+python-json-logger>=2.0.7
+
+# Additional packages will be added based on requirements

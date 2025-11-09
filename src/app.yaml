@@ -1,0 +1,40 @@
+command: [
+  "python",
+  "app.py"
+]
+
+env:
+  # AI Assistant Configuration
+  - name: "SERVING_ENDPOINT"
+    value: "{{SERVING_ENDPOINT}}"  # Will be replaced during deployment
+
+  # Analytics Data Configuration
+  - name: "DATABRICKS_WAREHOUSE_ID"
+    value: "{{WAREHOUSE_ID}}"  # Will be replaced during deployment
+
+  - name: "ANALYTICS_CATALOG"
+    value: "{{CATALOG}}"  # Will be replaced during deployment
+
+  - name: "ANALYTICS_SCHEMA"
+    value: "{{SCHEMA}}"  # Will be replaced during deployment
+
+  # Dashboard Configuration
+  - name: "DASHBOARD_URL"
+    value: ""  # Update after creating dashboard
+
+  - name: "GENIE_SPACE_ID"
+    value: ""  # Update after creating Genie space
+
+  # Data Refresh Job IDs
+  - name: "DATA_REFRESH_JOB_ID"
+    value: ""  # Update after creating job
+
+  - name: "AGGREGATION_JOB_ID"
+    value: ""  # Update after creating job
+
+  # Application Settings
+  - name: "LOG_LEVEL"
+    value: "INFO"
+
+  - name: "REFRESH_SCHEDULE"
+    value: "0 0 * * *"  # Daily at midnight UTC

@@ -1,0 +1,46 @@
+# Workspace Configuration Template
+# Copy this file to workspace.yaml and fill in your workspace details
+# DO NOT commit workspace.yaml to git (it's in .gitignore)
+
+workspace:
+  # Databricks workspace details
+  name: "your-workspace-name"  # e.g., "DEFAULT" or "e2demofieldeng"
+  host: "https://your-workspace.cloud.databricks.com"
+  profile: "DEFAULT"  # Profile name from ~/.databrickscfg
+
+  # Unity Catalog configuration
+  catalog: "your_catalog"  # e.g., "hls_amer_catalog"
+  schema: "telemetry"
+
+  # SQL Warehouse for serverless execution
+  warehouse_id: "your-warehouse-id"  # Get from: databricks warehouses list
+
+  # AI/ML Serving endpoint
+  serving_endpoint: "your-serving-endpoint"  # e.g., "databricks-claude-sonnet-4-5"
+
+  # App deployment path
+  workspace_path: "/Users/your.email@databricks.com/databricks_apps/hls-demo-telemetry-app"
+
+app:
+  # Application configuration
+  name: "hls-demo-telemetry-app"
+  description: "HLS Demo Telemetry Application for Executive Reporting"
+  compute_size: "MEDIUM"  # Options: SMALL, MEDIUM, LARGE
+
+  # Dashboard configuration
+  dashboard_id: ""  # Leave empty initially, update after creating dashboard
+  genie_space_id: ""  # Leave empty initially, update after creating Genie space
+
+  # Data refresh schedule
+  refresh_schedule: "0 0 * * *"  # Cron format: daily at midnight UTC
+
+  # Job IDs (populate after creating jobs)
+  data_refresh_job_id: ""
+  aggregation_job_id: ""
+
+features:
+  # Feature flags
+  enable_dashboard: true
+  enable_genie: true
+  enable_scheduled_refresh: true
+  enable_executive_reports: true
