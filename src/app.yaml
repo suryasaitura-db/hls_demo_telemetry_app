@@ -1,40 +1,20 @@
-command: [
-  "python",
-  "app.py"
-]
+# HLS Apps Analytics Hub v2.1 - Deployment Configuration
+# Using python directly (like supply-chain-app)
+command: ["python", "app_enhanced.py"]
 
 env:
-  # AI Assistant Configuration
-  - name: "SERVING_ENDPOINT"
-    value: "{{SERVING_ENDPOINT}}"  # Will be replaced during deployment
-
-  # Analytics Data Configuration
   - name: "DATABRICKS_WAREHOUSE_ID"
-    value: "{{WAREHOUSE_ID}}"  # Will be replaced during deployment
+    value: "4b28691c780d9875"
 
   - name: "ANALYTICS_CATALOG"
-    value: "{{CATALOG}}"  # Will be replaced during deployment
+    value: "hls_amer_catalog"
 
   - name: "ANALYTICS_SCHEMA"
-    value: "{{SCHEMA}}"  # Will be replaced during deployment
+    value: "apps_telemetry"
 
-  # Dashboard Configuration
-  - name: "DASHBOARD_URL"
-    value: ""  # Update after creating dashboard
+  # Embedded Dashboard URLs - uncomment and set to enable
+  # - name: "LOGFOOD_ANALYTICS_URL"
+  #   value: ""
 
-  - name: "GENIE_SPACE_ID"
-    value: ""  # Update after creating Genie space
-
-  # Data Refresh Job IDs
-  - name: "DATA_REFRESH_JOB_ID"
-    value: ""  # Update after creating job
-
-  - name: "AGGREGATION_JOB_ID"
-    value: ""  # Update after creating job
-
-  # Application Settings
-  - name: "LOG_LEVEL"
-    value: "INFO"
-
-  - name: "REFRESH_SCHEDULE"
-    value: "0 0 * * *"  # Daily at midnight UTC
+  # - name: "INFRASTRUCTURE_METRICS_URL"
+  #   value: ""

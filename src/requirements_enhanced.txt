@@ -1,0 +1,27 @@
+# ====================================================================
+# HLS APPS ANALYTICS HUB - ENHANCED REQUIREMENTS
+# ====================================================================
+# Version: 2.1.0
+# Package versions aligned with working supply-chain-app
+# ====================================================================
+
+# Core Dash Framework (pinned versions from working app)
+dash==2.18.2
+dash-bootstrap-components==1.6.0
+
+# Data Processing
+pandas==2.1.4
+numpy==1.26.4
+
+# Visualization
+plotly==5.22.0
+
+# Databricks Connectivity
+databricks-sql-connector==3.3.0
+databricks-sdk==0.32.0
+
+# Configuration
+pyyaml>=6.0
+
+# Environment variables
+python-dotenv==1.0.1

@@ -1,0 +1,175 @@
+# ====================================================================
+# HLS APPS ANALYTICS HUB - DASHBOARD CONFIGURATION
+# ====================================================================
+# This file configures the embedded dashboards displayed in the app.
+# Update the URLs below to point to your Databricks AI/BI dashboards.
+#
+# HOW TO GET DASHBOARD EMBED URLS:
+# 1. Open your dashboard in Databricks
+# 2. Click "Share" button (top right)
+# 3. Select "Embed" tab
+# 4. Copy the embed URL (format: https://<workspace>.databricks.com/embed/dashboardsv3/<id>)
+#
+# IMPORTANT: Dashboard must have appropriate sharing permissions set.
+# ====================================================================
+
+# Application metadata
+app:
+  name: "HLS Apps Analytics Hub"
+  version: "2.0.0"
+  description: "Executive telemetry dashboard for HLS Databricks Apps"
+
+# ====================================================================
+# EMBEDDED DASHBOARDS CONFIGURATION
+# ====================================================================
+# Each dashboard entry configures an iframe tab in the application.
+# Set 'enabled: true' and provide a valid URL to display the dashboard.
+# ====================================================================
+
+dashboards:
+  # ------------------------------------------------------------------------
+  # Logfood Analytics Dashboard (Tab 5)
+  # ------------------------------------------------------------------------
+  # Purpose: Analytics from Databricks Logfood master workspaces
+  # Data Source: Logfood telemetry tables
+  # ------------------------------------------------------------------------
+  logfood_analytics:
+    enabled: false  # Set to true when URL is configured
+    name: "Logfood Analytics"
+    description: "Analytics from Databricks Logfood master workspaces"
+    icon: "bar-chart-line-fill"
+    # INSTRUCTIONS: Replace with your actual Logfood dashboard embed URL
+    # Example: https://fe-vm-hls-amer.cloud.databricks.com/embed/dashboardsv3/abc123
+    url: ""
+    # Optional: Set height in pixels (default: 800)
+    height: 900
+    # Optional: Set background color
+    background: "#FFFFFF"
+    # Optional: External link to open dashboard in new tab
+    external_url: ""
+
+  # ------------------------------------------------------------------------
+  # Infrastructure Metrics Dashboard (Tab 6)
+  # ------------------------------------------------------------------------
+  # Purpose: Infrastructure and performance metrics
+  # Data Source: System tables, performance logs
+  # ------------------------------------------------------------------------
+  infrastructure_metrics:
+    enabled: false  # Set to true when URL is configured
+    name: "Infrastructure Metrics"
+    description: "Infrastructure and performance monitoring"
+    icon: "server"
+    # INSTRUCTIONS: Replace with your actual Infrastructure dashboard embed URL
+    url: ""
+    height: 900
+    background: "#FFFFFF"
+    external_url: ""
+
+  # ------------------------------------------------------------------------
+  # Executive Summary Dashboard (Optional)
+  # ------------------------------------------------------------------------
+  # Purpose: High-level executive summary view
+  # Data Source: Aggregated metrics
+  # ------------------------------------------------------------------------
+  executive_summary:
+    enabled: false  # Set to true when URL is configured
+    name: "Executive Summary"
+    description: "High-level executive overview"
+    icon: "clipboard-data"
+    url: ""
+    height: 850
+    background: "#FFFFFF"
+    external_url: ""
+
+  # ------------------------------------------------------------------------
+  # Custom Dashboard 1 (Template)
+  # ------------------------------------------------------------------------
+  # Duplicate this section to add more dashboard tabs
+  # ------------------------------------------------------------------------
+  custom_dashboard_1:
+    enabled: false
+    name: "Custom Dashboard"
+    description: "Add your custom dashboard here"
+    icon: "graph-up"
+    url: ""
+    height: 800
+    background: "#FFFFFF"
+    external_url: ""
+
+# ====================================================================
+# TAB ORDER CONFIGURATION
+# ====================================================================
+# Specify the order of tabs in the application.
+# Built-in tabs: apps_usage, cost_roi, security, weekly_trends
+# Dashboard tabs use the key names from the dashboards section above.
+# ====================================================================
+
+tab_order:
+  - apps_usage          # Built-in: Apps Usage Telemetry
+  - cost_roi            # Built-in: Cost & ROI Analysis
+  - security            # Built-in: Security & Compliance
+  - weekly_trends       # Built-in: Weekly Trends
+  - logfood_analytics   # Dashboard: Logfood Analytics
+  - infrastructure_metrics  # Dashboard: Infrastructure
+
+# ====================================================================
+# THEME CONFIGURATION (Optional)
+# ====================================================================
+# Override default theme colors if needed
+# ====================================================================
+
+theme:
+  # Primary accent color (Databricks red)
+  primary: "#FF3621"
+  # Secondary color (Navy blue)
+  secondary: "#1B3A57"
+  # Success color (Teal green)
+  success: "#00A67E"
+  # Warning color (Amber)
+  warning: "#F5A623"
+  # Danger/Error color (Red)
+  danger: "#DC3545"
+  # Info color (Sky blue)
+  info: "#0EA5E9"
+
+# ====================================================================
+# DATA SOURCE CONFIGURATION
+# ====================================================================
+# Configure additional data sources for the built-in tabs
+# ====================================================================
+
+data_sources:
+  # Primary analytics catalog and schema
+  analytics:
+    catalog: "hls_amer_catalog"
+    schema: "apps_telemetry"
+
+  # Billing data (for cost metrics)
+  billing:
+    catalog: "system"
+    schema: "billing"
+
+  # Audit logs (for security metrics)
+  audit:
+    catalog: "system"
+    schema: "access"
+
+# ====================================================================
+# REFRESH CONFIGURATION
+# ====================================================================
+
+refresh:
+  # Auto-refresh interval in milliseconds (default: 5 minutes)
+  interval_ms: 300000
+  # Enable auto-refresh by default
+  auto_refresh_enabled: true
+
+# ====================================================================
+# WORKSPACE CONFIGURATION
+# ====================================================================
+
+workspace:
+  # Workspace ID for filtering audit logs
+  workspace_id: "1602460480284688"
+  # SQL Warehouse ID
+  warehouse_id: "4b28691c780d9875"
